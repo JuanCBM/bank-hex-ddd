@@ -7,8 +7,8 @@ public class Money {
 
   public static final String INCOMPATIBLE_CURRENCY = "Incompatible currency";
 
-  Float value;
-  String currency;
+  private Float value;
+  private String currency;
 
   public Money(Float value, String currency) {
     this.value = value;
@@ -34,12 +34,12 @@ public class Money {
   }
 
   boolean isLessThan(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), "Incompatible currency");
+    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
     return this.value < amount.value;
   }
 
   boolean isLessOrEqualThan(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), "Incompatible currency");
+    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
     return this.value <= amount.value;
   }
 

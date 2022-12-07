@@ -5,15 +5,15 @@ import org.springframework.util.Assert;
 
 public class Account {
 
-  public Long id;
-  public String name;
-  public Money balance;
+  private Long id;
+  private String name;
+  private Money balance;
 
   public Account() {
 
   }
 
-  public Account (String name, String currency) {
+  public Account(String name, String currency) {
     this.name = name;
     this.balance = new Money(Float.NaN, currency);
   }
@@ -22,7 +22,8 @@ public class Account {
     Account account = new Account();
     account.setId(fullAccountResponseDto.getId());
     account.setName(fullAccountResponseDto.getName());
-    account.setBalance(new Money(fullAccountResponseDto.getValue(),fullAccountResponseDto.getCurrency()));
+    account.setBalance(
+        new Money(fullAccountResponseDto.getValue(), fullAccountResponseDto.getCurrency()));
 
     return account;
   }

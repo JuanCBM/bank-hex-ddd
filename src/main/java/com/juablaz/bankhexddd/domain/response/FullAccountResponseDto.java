@@ -1,7 +1,7 @@
 package com.juablaz.bankhexddd.domain.response;
 
 public class FullAccountResponseDto {
-  
+
   private Long id;
   private String name;
   private Float value;

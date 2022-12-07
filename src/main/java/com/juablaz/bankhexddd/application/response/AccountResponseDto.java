@@ -8,17 +8,17 @@ import lombok.Data;
 @Builder
 public class AccountResponseDto {
 
-  public Long id;
-  public String name;
-  public String currency;
+  private Long id;
+  private String name;
+  private Float value;
+  private String currency;
 
   public static AccountResponseDto of(FullAccountResponseDto fullAccountResponseDto) {
-
-    return null;
-//    return AccountResponseDto.builder()
-//        .id(accountFullResponseDto.getId())
-//        .name(accountFullResponseDto.getName())
-//        .currency(accountFullResponseDto.getCurrency())
-//        .build();
+    return AccountResponseDto.builder()
+        .id(fullAccountResponseDto.getId())
+        .name(fullAccountResponseDto.getName())
+        .value(fullAccountResponseDto.getValue())
+        .currency(fullAccountResponseDto.getCurrency())
+        .build();
   }
 }

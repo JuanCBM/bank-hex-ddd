@@ -1,107 +1,156 @@
 package com.juablaz.bankhexddd.domain.service;
 
-import static com.juablaz.bankhexddd.utils.AccountConstants.EUR;
-import static com.juablaz.bankhexddd.utils.AccountConstants.ONE;
-import static com.juablaz.bankhexddd.utils.AccountConstants.ONE_HUNDRED;
-import static com.juablaz.bankhexddd.utils.AccountConstants.TEN;
-import static com.juablaz.bankhexddd.utils.AccountConstants.USD;
-import static com.juablaz.bankhexddd.utils.AccountConstants.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.juablaz.bankhexddd.domain.Money;
 import com.juablaz.bankhexddd.domain.repository.AccountRepository;
 import com.juablaz.bankhexddd.domain.request.FullAccountRequestDto;
 import com.juablaz.bankhexddd.domain.response.FullAccountResponseDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.juablaz.bankhexddd.utils.AccountTestConstants;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.ActiveProfiles;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ActiveProfiles("test")
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class AccountServiceTest {
+class AccountServiceTest {
 
   @MockBean
   private AccountRepository accountRepository;
 
   private AccountService accountService;
 
-  @Before
-  public void before() {
+  @BeforeEach
+  void before() {
     this.accountService = new AccountServiceImpl(this.accountRepository);
   }
 
   @Test
-  public void createAndRetrieveAccountTest() {
-    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(ONE, USERNAME,
-        ONE_HUNDRED, EUR);
+  void createAndRetrieveAccountTest() {
+    Mockito.when(accountRepository.save(Mockito.any())).thenReturn(AccountTestConstants.ONE);
 
-    Mockito.when(accountRepository.save(Mockito.any())).thenReturn(ONE);
+    Long accountCreated = accountService.create(AccountTestConstants.USERNAME,
+        AccountTestConstants.EUR);
+
+    assertEquals(AccountTestConstants.ONE, accountCreated);
+
+  }
+
+  @Test
+  void retrieveAccountTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
+
     Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
 
-    Long accountCreated = accountService.create(USERNAME, EUR);
-    FullAccountResponseDto account = accountService.find(accountCreated);
+    FullAccountResponseDto account = accountService.find(AccountTestConstants.ONE);
 
     assertNotNull(account);
-    assertEquals(USERNAME, account.getName());
+    assertEquals(AccountTestConstants.USERNAME, account.getName());
 
   }
 
   @Test
-  public void depositSameCurrencyAmountTest() {
-    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(ONE, USERNAME,
-        ONE_HUNDRED, EUR);
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(ONE,
-        ONE_HUNDRED + TEN, EUR);
+  void depositSameCurrencyAmountTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
+    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN, AccountTestConstants.EUR);
 
     Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
 
-    accountService.deposit(ONE, TEN, EUR);
+    accountService.deposit(AccountTestConstants.ONE, AccountTestConstants.TEN,
+        AccountTestConstants.EUR);
 
     Mockito.verify(accountRepository).update(fullAccountRequestDto);
 
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void depositDifferentCurrencyAmountTest() {
-    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(ONE, USERNAME,
-        ONE_HUNDRED, EUR);
+  @Test
+  void depositDifferentCurrencyAmountTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
 
     Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
-    accountService.deposit(ONE, TEN, USD);
+
+    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        () -> accountService.deposit(AccountTestConstants.ONE, AccountTestConstants.TEN,
+            AccountTestConstants.USD));
+
+    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+
   }
 
   @Test
-  public void withdrawSameCurrencyAmountTest() {
-    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(ONE, USERNAME,
-        ONE_HUNDRED, EUR);
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(ONE,
-        ONE_HUNDRED - TEN, EUR);
+  void withdrawSameCurrencyAmountTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
+    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.ONE_HUNDRED - AccountTestConstants.TEN, AccountTestConstants.EUR);
 
     Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
-    accountService.withdraw(ONE, TEN, EUR);
+    accountService.withdraw(
+        AccountTestConstants.ONE, AccountTestConstants.TEN, AccountTestConstants.EUR);
 
     Mockito.verify(accountRepository).update(fullAccountRequestDto);
 
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void withdrawDifferentCurrencyAmountTest() {
-    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(ONE, USERNAME,
-        ONE_HUNDRED, EUR);
+  @Test
+  void withdrawMoreThanBalanceTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
+    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.ONE_HUNDRED - (AccountTestConstants.ONE_HUNDRED
+            + AccountTestConstants.TEN),
+        AccountTestConstants.EUR);
 
     Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
-    accountService.deposit(ONE, TEN, USD);
+    accountService.withdraw(
+        AccountTestConstants.ONE, AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN,
+        AccountTestConstants.EUR);
+
+    Mockito.verify(accountRepository).update(fullAccountRequestDto);
+
+  }
+
+  @Test
+  void withdrawDifferentCurrencyAmountTest() {
+    FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
+        AccountTestConstants.ONE,
+        AccountTestConstants.USERNAME,
+        AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
+
+    Mockito.when(accountRepository.findById(Mockito.anyLong())).thenReturn(fullAccountResponseDto);
+
+    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        () -> accountService.withdraw(AccountTestConstants.ONE, AccountTestConstants.TEN,
+            AccountTestConstants.USD));
+
+    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+
   }
 
 }
-/*
-  // TODO: should reject withdraw more than balance, or maybe not?
-*/

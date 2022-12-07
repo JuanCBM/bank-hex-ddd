@@ -4,9 +4,9 @@ import com.juablaz.bankhexddd.domain.Account;
 
 public class FullAccountRequestDto {
 
-  public Long id;
-  public Float value;
-  public String currency;
+  private Long id;
+  private Float value;
+  private String currency;
 
   public FullAccountRequestDto(Long id, Float value, String currency) {
     this.id = id;
@@ -15,6 +15,15 @@ public class FullAccountRequestDto {
   }
 
   public FullAccountRequestDto() {
+  }
+
+  public static FullAccountRequestDto of(Account account) {
+    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto();
+    fullAccountRequestDto.setId(account.getId());
+    fullAccountRequestDto.setCurrency(account.getBalance().getCurrency());
+    fullAccountRequestDto.setValue(account.getBalance().getValue());
+
+    return fullAccountRequestDto;
   }
 
   public Long getId() {
@@ -39,15 +48,6 @@ public class FullAccountRequestDto {
 
   public void setCurrency(String currency) {
     this.currency = currency;
-  }
-
-  public static FullAccountRequestDto of(Account account) {
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto();
-    fullAccountRequestDto.setId(account.getId());
-    fullAccountRequestDto.setCurrency(account.getBalance().getCurrency());
-    fullAccountRequestDto.setValue(account.getBalance().getValue());
-
-    return fullAccountRequestDto;
   }
 
   @Override
