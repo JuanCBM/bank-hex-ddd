@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.juablaz.bankhexddd.accounting.domain.Money;
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 import com.juablaz.bankhexddd.accounting.domain.repository.AccountRepository;
+import com.juablaz.bankhexddd.accounting.domain.request.AccountRequestDto;
 import com.juablaz.bankhexddd.accounting.domain.request.FullAccountRequestDto;
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;
 import com.juablaz.bankhexddd.utils.AccountTestConstants;
@@ -63,12 +64,12 @@ class AccountServiceTest {
   }
 
   @Test
-  void depositSameCurrencyAmountTest() {
+  void depositSameCurrencyAmountTest() throws IncompatibleCurrencyException {
     FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
         AccountTestConstants.ONE,
         AccountTestConstants.USERNAME,
         AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+    AccountRequestDto accountRequestDto = new AccountRequestDto(
         AccountTestConstants.ONE,
         AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN, AccountTestConstants.EUR);
 
@@ -78,7 +79,7 @@ class AccountServiceTest {
     accountService.deposit(AccountTestConstants.ONE, AccountTestConstants.TEN,
         AccountTestConstants.EUR);
 
-    Mockito.verify(accountRepository).update(fullAccountRequestDto);
+    Mockito.verify(accountRepository).update(accountRequestDto);
 
   }
 
@@ -92,21 +93,23 @@ class AccountServiceTest {
     Mockito.when(accountRepository.findById(Mockito.anyString()))
         .thenReturn(fullAccountResponseDto);
 
-    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+    IncompatibleCurrencyException incompatibleCurrencyException = assertThrows(
+        IncompatibleCurrencyException.class,
         () -> accountService.deposit(AccountTestConstants.ONE, AccountTestConstants.TEN,
             AccountTestConstants.USD));
 
-    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+    assertEquals(IncompatibleCurrencyException.INCOMPATIBLE_CURRENCY,
+        incompatibleCurrencyException.getMessage());
 
   }
 
   @Test
-  void withdrawSameCurrencyAmountTest() {
+  void withdrawSameCurrencyAmountTest() throws IncompatibleCurrencyException {
     FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
         AccountTestConstants.ONE,
         AccountTestConstants.USERNAME,
         AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+    AccountRequestDto accountRequestDto = new AccountRequestDto(
         AccountTestConstants.ONE,
         AccountTestConstants.ONE_HUNDRED - AccountTestConstants.TEN, AccountTestConstants.EUR);
 
@@ -115,17 +118,17 @@ class AccountServiceTest {
     accountService.withdraw(
         AccountTestConstants.ONE, AccountTestConstants.TEN, AccountTestConstants.EUR);
 
-    Mockito.verify(accountRepository).update(fullAccountRequestDto);
+    Mockito.verify(accountRepository).update(accountRequestDto);
 
   }
 
   @Test
-  void withdrawMoreThanBalanceTest() {
+  void withdrawMoreThanBalanceTest() throws IncompatibleCurrencyException {
     FullAccountResponseDto fullAccountResponseDto = new FullAccountResponseDto(
         AccountTestConstants.ONE,
         AccountTestConstants.USERNAME,
         AccountTestConstants.ONE_HUNDRED, AccountTestConstants.EUR);
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto(
+    AccountRequestDto accountRequestDto = new AccountRequestDto(
         AccountTestConstants.ONE,
         AccountTestConstants.ONE_HUNDRED - (AccountTestConstants.ONE_HUNDRED
             + AccountTestConstants.TEN),
@@ -137,7 +140,7 @@ class AccountServiceTest {
         AccountTestConstants.ONE, AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN,
         AccountTestConstants.EUR);
 
-    Mockito.verify(accountRepository).update(fullAccountRequestDto);
+    Mockito.verify(accountRepository).update(accountRequestDto);
 
   }
 
@@ -151,11 +154,13 @@ class AccountServiceTest {
     Mockito.when(accountRepository.findById(Mockito.anyString()))
         .thenReturn(fullAccountResponseDto);
 
-    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+    IncompatibleCurrencyException incompatibleCurrencyException = assertThrows(
+        IncompatibleCurrencyException.class,
         () -> accountService.withdraw(AccountTestConstants.ONE, AccountTestConstants.TEN,
             AccountTestConstants.USD));
 
-    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+    assertEquals(IncompatibleCurrencyException.INCOMPATIBLE_CURRENCY,
+        incompatibleCurrencyException.getMessage());
 
   }
 

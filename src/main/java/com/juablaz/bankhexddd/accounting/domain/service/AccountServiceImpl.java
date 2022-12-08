@@ -2,7 +2,9 @@ package com.juablaz.bankhexddd.accounting.domain.service;
 
 import com.juablaz.bankhexddd.accounting.domain.Account;
 import com.juablaz.bankhexddd.accounting.domain.Money;
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 import com.juablaz.bankhexddd.accounting.domain.repository.AccountRepository;
+import com.juablaz.bankhexddd.accounting.domain.request.AccountRequestDto;
 import com.juablaz.bankhexddd.accounting.domain.request.FullAccountRequestDto;
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;
 
@@ -28,22 +30,24 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public void deposit(String accountId, Float value, String currency) {
+  public void deposit(String accountId, Float value, String currency)
+      throws IncompatibleCurrencyException {
     FullAccountResponseDto fullAccountResponseDto = this.accountRepository.findById(accountId);
 
     Account account = Account.of(fullAccountResponseDto);
     account.deposit(new Money(value, currency));
 
-    this.accountRepository.update(FullAccountRequestDto.of(account));
+    this.accountRepository.update(AccountRequestDto.of(account));
   }
 
   @Override
-  public void withdraw(String accountId, Float value, String currency) {
+  public void withdraw(String accountId, Float value, String currency)
+      throws IncompatibleCurrencyException {
     FullAccountResponseDto fullAccountResponseDto = this.accountRepository.findById(accountId);
 
     Account account = Account.of(fullAccountResponseDto);
     account.withdraw(new Money(value, currency));
 
-    this.accountRepository.update(FullAccountRequestDto.of(account));
+    this.accountRepository.update(AccountRequestDto.of(account));
   }
 }

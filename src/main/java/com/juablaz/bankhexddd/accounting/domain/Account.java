@@ -1,8 +1,10 @@
 package com.juablaz.bankhexddd.accounting.domain;
 
+import static com.juablaz.bankhexddd._shared.Constants.INITIAL_ACCOUNT_VALUE;
+
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;
 import java.util.UUID;
-import org.springframework.util.Assert;
 
 public class Account {
 
@@ -17,7 +19,7 @@ public class Account {
   public Account(String name, String currency) {
     this.id = UUID.randomUUID().toString();
     this.name = name;
-    this.balance = new Money(Float.NaN, currency);
+    this.balance = new Money(INITIAL_ACCOUNT_VALUE, currency);
   }
 
   public static Account of(FullAccountResponseDto fullAccountResponseDto) {
@@ -30,14 +32,11 @@ public class Account {
     return account;
   }
 
-  public void withdraw(Money amount) {
-    Assert.isTrue(amount.sameCurrency(this.balance), Money.INCOMPATIBLE_CURRENCY);
-
+  public void withdraw(Money amount) throws IncompatibleCurrencyException {
     this.balance = this.balance.subtract(amount);
   }
 
-  public void deposit(Money amount) {
-    Assert.isTrue(amount.sameCurrency(this.balance), Money.INCOMPATIBLE_CURRENCY);
+  public void deposit(Money amount) throws IncompatibleCurrencyException {
     this.balance = this.balance.add(amount);
   }
 

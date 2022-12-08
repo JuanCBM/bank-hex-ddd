@@ -1,11 +1,9 @@
 package com.juablaz.bankhexddd.accounting.domain;
 
-import org.springframework.util.Assert;
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 
 // Value Object, enriquece el dominio. No es una entidad.
 public class Money {
-
-  public static final String INCOMPATIBLE_CURRENCY = "Incompatible currency";
 
   private Float value;
   private String currency;
@@ -19,13 +17,19 @@ public class Money {
 
   }
 
-  Money add(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
+  Money add(Money amount) throws IncompatibleCurrencyException {
+    validateSameCurrency(amount);
     return new Money(this.value + amount.value, this.currency);
   }
 
-  Money subtract(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
+  private void validateSameCurrency(Money amount) throws IncompatibleCurrencyException {
+    if (!this.sameCurrency(amount)) {
+      throw new IncompatibleCurrencyException();
+    }
+  }
+
+  Money subtract(Money amount) throws IncompatibleCurrencyException {
+    validateSameCurrency(amount);
     return new Money(this.value - amount.value, this.currency);
   }
 
@@ -33,13 +37,13 @@ public class Money {
     return this.currency.equals(balance.currency);
   }
 
-  boolean isLessThan(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
+  boolean isLessThan(Money amount) throws IncompatibleCurrencyException {
+    validateSameCurrency(amount);
     return this.value < amount.value;
   }
 
-  boolean isLessOrEqualThan(Money amount) {
-    Assert.isTrue(this.sameCurrency(amount), INCOMPATIBLE_CURRENCY);
+  boolean isLessOrEqualThan(Money amount) throws IncompatibleCurrencyException {
+    validateSameCurrency(amount);
     return this.value <= amount.value;
   }
 

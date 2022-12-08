@@ -3,6 +3,7 @@ package com.juablaz.bankhexddd.accounting.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;
 import com.juablaz.bankhexddd.utils.AccountTestConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,7 @@ public class AccountTest {
   }
 
   @Test
-  public void withdrawSameCurrencyTest() {
+  public void withdrawSameCurrencyTest() throws IncompatibleCurrencyException {
     this.account.withdraw(new Money(AccountTestConstants.TEN, AccountTestConstants.EUR));
     assertEquals(
         AccountTestConstants.ONE_HUNDRED - AccountTestConstants.TEN,
@@ -36,14 +37,16 @@ public class AccountTest {
 
   @Test
   public void withdrawDifferentCurrencyTest() {
-    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+    IncompatibleCurrencyException incompatibleCurrencyException = assertThrows(
+        IncompatibleCurrencyException.class,
         () -> this.account.withdraw(new Money(AccountTestConstants.TEN, AccountTestConstants.USD)));
 
-    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+    assertEquals(IncompatibleCurrencyException.INCOMPATIBLE_CURRENCY,
+        incompatibleCurrencyException.getMessage());
   }
 
   @Test
-  public void withdrawMoreThanBalanceCurrencyTest() {
+  public void withdrawMoreThanBalanceCurrencyTest() throws IncompatibleCurrencyException {
     this.account.withdraw(
         new Money(AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN,
             AccountTestConstants.EUR));
@@ -54,7 +57,7 @@ public class AccountTest {
   }
 
   @Test
-  public void depositSameCurrencyTest() {
+  public void depositSameCurrencyTest() throws IncompatibleCurrencyException {
     this.account.deposit(new Money(AccountTestConstants.TEN, AccountTestConstants.EUR));
     assertEquals(
         AccountTestConstants.ONE_HUNDRED + AccountTestConstants.TEN,
@@ -63,10 +66,12 @@ public class AccountTest {
 
   @Test
   public void depositDifferentCurrencyTest() {
-    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+    IncompatibleCurrencyException incompatibleCurrencyException = assertThrows(
+        IncompatibleCurrencyException.class,
         () -> this.account.deposit(new Money(AccountTestConstants.TEN, AccountTestConstants.USD)));
 
-    assertEquals(Money.INCOMPATIBLE_CURRENCY, illegalArgumentException.getMessage());
+    assertEquals(IncompatibleCurrencyException.INCOMPATIBLE_CURRENCY,
+        incompatibleCurrencyException.getMessage());
   }
 
   @Test

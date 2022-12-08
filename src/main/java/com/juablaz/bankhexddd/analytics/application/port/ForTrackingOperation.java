@@ -1,13 +1,14 @@
 package com.juablaz.bankhexddd.analytics.application.port;
 
-import com.juablaz.bankhexddd.analytics.domain.response.FullAnalyticAccountResponseDto;
+import com.juablaz.bankhexddd.analytics.application.response.AnalyticAccountResponseDto;
+import java.util.List;
 
 public interface ForTrackingOperation {
 
   void trackNewAccount(String accountId, String currency);
 
-  void trackConnection(String accountId);
+  AnalyticAccountResponseDto findByAccountId(String accountId);
 
-  FullAnalyticAccountResponseDto findAccountsPerCurrency(String currency);
+  List<AnalyticAccountResponseDto> findAccountsPerCurrency(String currency);
 
 }

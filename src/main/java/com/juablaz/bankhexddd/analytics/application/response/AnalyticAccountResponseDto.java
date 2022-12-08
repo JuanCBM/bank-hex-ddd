@@ -1,32 +1,30 @@
-package com.juablaz.bankhexddd.analytics.domain.response;
+package com.juablaz.bankhexddd.analytics.application.response;
 
-import com.juablaz.bankhexddd.analytics.domain.AnalyticAccount;
+import com.juablaz.bankhexddd.analytics.domain.response.FullAnalyticAccountResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class FullAnalyticAccountResponseDto {
+public class AnalyticAccountResponseDto {
 
   private String accountId;
   private String currency;
   private List<LocalDateTime> annalyticConnections;
 
-  public FullAnalyticAccountResponseDto(String accountId, String currency,
+  public AnalyticAccountResponseDto(String accountId, String currency,
       List<LocalDateTime> annalyticConnections) {
     this.accountId = accountId;
     this.currency = currency;
     this.annalyticConnections = annalyticConnections;
   }
 
-  public FullAnalyticAccountResponseDto() {
+  public AnalyticAccountResponseDto() {
   }
 
-  public static FullAnalyticAccountResponseDto of(AnalyticAccount analyticAccount) {
-    return new FullAnalyticAccountResponseDto
-        (analyticAccount.getId(), analyticAccount.getCurrency(),
-            analyticAccount.getAnalyticConnections().stream()
-                .map(analyticConnectionEntity -> analyticConnectionEntity.getStartedAt()).collect(
-                    Collectors.toList()));
+  public static AnalyticAccountResponseDto of(
+      FullAnalyticAccountResponseDto fullAnalyticAccountResponseDto) {
+    return new AnalyticAccountResponseDto(fullAnalyticAccountResponseDto.getAccountId(),
+        fullAnalyticAccountResponseDto.getCurrency(),
+        fullAnalyticAccountResponseDto.getAnnalyticConnections());
   }
 
   public String getAccountId() {
@@ -52,5 +50,4 @@ public class FullAnalyticAccountResponseDto {
   public void setAnnalyticConnections(List<LocalDateTime> annalyticConnections) {
     this.annalyticConnections = annalyticConnections;
   }
-
 }

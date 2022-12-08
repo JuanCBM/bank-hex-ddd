@@ -1,7 +1,9 @@
 package com.juablaz.bankhexddd.accounting.application.rest;
 
 import com.juablaz.bankhexddd.accounting.application.dto.response.AccountResponseDto;
+import com.juablaz.bankhexddd.accounting.application.exception.IncompatibleCurrencyHTTPException;
 import com.juablaz.bankhexddd.accounting.application.port.ForExistingAccountsOperation;
+import com.juablaz.bankhexddd.accounting.domain.exception.IncompatibleCurrencyException;
 import com.juablaz.bankhexddd.accounting.domain.service.AccountService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,14 +30,23 @@ public class ATMControllerAdapter implements ForExistingAccountsOperation {
   @Override
   @GetMapping(value = "/{accountId}/deposit")
   public void deposit(@PathVariable String accountId, @RequestParam Float amount,
-      @RequestParam String currency) {
-    this.accountService.deposit(accountId, amount, currency);
+      @RequestParam String currency) throws IncompatibleCurrencyHTTPException {
+    try {
+      this.accountService.deposit(accountId, amount, currency);
+    } catch (IncompatibleCurrencyException e) {
+      throw new IncompatibleCurrencyHTTPException(e.getMessage());
+    }
+
   }
 
   @Override
   @GetMapping(value = "/{accountId}/withdraw")
   public void withdraw(@PathVariable String accountId, @RequestParam Float amount,
-      @RequestParam String currency) {
-    this.accountService.withdraw(accountId, amount, currency);
+      @RequestParam String currency) throws IncompatibleCurrencyHTTPException {
+    try {
+      this.accountService.withdraw(accountId, amount, currency);
+    } catch (IncompatibleCurrencyException e) {
+      throw new IncompatibleCurrencyHTTPException(e.getMessage());
+    }
   }
 }

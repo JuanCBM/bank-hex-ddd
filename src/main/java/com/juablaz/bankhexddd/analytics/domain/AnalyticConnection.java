@@ -4,20 +4,18 @@ import java.time.LocalDateTime;
 
 public class AnalyticConnection {
 
-  private LocalDateTime startedAt;
+  private final LocalDateTime startedAt;
 
   public AnalyticConnection(LocalDateTime startedAt) {
     this.startedAt = startedAt;
   }
 
   public AnalyticConnection() {
+    this.startedAt = LocalDateTime.now();
   }
 
   public LocalDateTime getStartedAt() {
     return startedAt;
   }
 
-  public void setStartedAt(LocalDateTime startedAt) {
-    this.startedAt = startedAt;
-  }
 }

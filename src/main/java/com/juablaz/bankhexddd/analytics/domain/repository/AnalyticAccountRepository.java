@@ -12,6 +12,6 @@ public interface AnalyticAccountRepository {
 
   FullAnalyticAccountResponseDto find(String accountId);
 
-  void trackNewAccount(FullAccountAnalyticRequestDto fullAccountRequestDto);
+  void create(FullAccountAnalyticRequestDto fullAccountRequestDto);
 
 }

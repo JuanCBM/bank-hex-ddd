@@ -2,31 +2,28 @@ package com.juablaz.bankhexddd.accounting.domain.request;
 
 import com.juablaz.bankhexddd.accounting.domain.Account;
 
-public class FullAccountRequestDto {
+public class AccountRequestDto {
 
   private String id;
-  private String name;
   private Float value;
   private String currency;
 
-  public FullAccountRequestDto(String id, String name, Float value, String currency) {
+  public AccountRequestDto(String id, Float value, String currency) {
     this.id = id;
-    this.name = name;
     this.value = value;
     this.currency = currency;
   }
 
-  public FullAccountRequestDto() {
+  public AccountRequestDto() {
   }
 
-  public static FullAccountRequestDto of(Account account) {
-    FullAccountRequestDto fullAccountRequestDto = new FullAccountRequestDto();
-    fullAccountRequestDto.setId(account.getId());
-    fullAccountRequestDto.setName(account.getName());
-    fullAccountRequestDto.setCurrency(account.getBalance().getCurrency());
-    fullAccountRequestDto.setValue(account.getBalance().getValue());
+  public static AccountRequestDto of(Account account) {
+    AccountRequestDto accountRequestDto = new AccountRequestDto();
+    accountRequestDto.setId(account.getId());
+    accountRequestDto.setCurrency(account.getBalance().getCurrency());
+    accountRequestDto.setValue(account.getBalance().getValue());
 
-    return fullAccountRequestDto;
+    return accountRequestDto;
   }
 
   public String getId() {
@@ -53,14 +50,6 @@ public class FullAccountRequestDto {
     this.currency = currency;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -70,12 +59,9 @@ public class FullAccountRequestDto {
       return false;
     }
 
-    FullAccountRequestDto that = (FullAccountRequestDto) o;
+    AccountRequestDto that = (AccountRequestDto) o;
 
     if (id != null ? !id.equals(that.id) : that.id != null) {
-      return false;
-    }
-    if (name != null ? !name.equals(that.name) : that.name != null) {
       return false;
     }
     if (value != null ? !value.equals(that.value) : that.value != null) {
@@ -88,7 +74,6 @@ public class FullAccountRequestDto {
   public int hashCode() {
     int result = id != null ? id.hashCode() : 0;
     result = 31 * result + (value != null ? value.hashCode() : 0);
-    result = 31 * result + (name != null ? name.hashCode() : 0);
     result = 31 * result + (currency != null ? currency.hashCode() : 0);
     return result;
   }

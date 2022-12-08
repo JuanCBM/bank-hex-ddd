@@ -1,6 +1,6 @@
-package com.juablaz.bankhexddd.accounting.application.rest;
+package com.juablaz.bankhexddd.accounting.application.rest.unitary;
 
-import static com.juablaz.bankhexddd.util.Constants.URL_DELIMITER;
+import static com.juablaz.bankhexddd._core.util.Constants.URL_DELIMITER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;

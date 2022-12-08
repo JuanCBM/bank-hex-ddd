@@ -1,30 +1,29 @@
 package com.juablaz.bankhexddd.analytics.domain;
 
 import com.juablaz.bankhexddd.analytics.domain.response.FullAnalyticAccountResponseDto;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AnalyticAccount {
 
+  private final List<AnalyticConnection> analyticConnections;
   private String id;
   private String currency;
-  private List<AnalyticConnection> analyticConnections;
 
-  public AnalyticAccount(String id, String currency,
-      List<AnalyticConnection> analyticConnections) {
+  public AnalyticAccount(String id, String currency, List<AnalyticConnection> analyticConnections) {
     this.id = id;
     this.currency = currency;
     this.analyticConnections = analyticConnections;
   }
 
   public static AnalyticAccount of(FullAnalyticAccountResponseDto fullAnalyticAccountResponseDto) {
-    AnalyticAccount account = new AnalyticAccount(
+    return new AnalyticAccount(
         fullAnalyticAccountResponseDto.getAccountId(),
         fullAnalyticAccountResponseDto.getCurrency(),
-        Collections.emptyList()
+        fullAnalyticAccountResponseDto.getAnnalyticConnections().stream().map(localDateTime ->
+            new AnalyticConnection(localDateTime)).collect(Collectors.toList())
     );
 
-    return account;
   }
 
   public void addConnection() {

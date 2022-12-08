@@ -1,8 +1,8 @@
-package com.juablaz.bankhexddd.accounting.application.rest;
+package com.juablaz.bankhexddd.accounting.application.rest.unitary;
 
+import com.juablaz.bankhexddd._core.util.Constants;
 import com.juablaz.bankhexddd.accounting.domain.response.FullAccountResponseDto;
 import com.juablaz.bankhexddd.accounting.domain.service.AccountService;
-import com.juablaz.bankhexddd.util.Constants;
 import com.juablaz.bankhexddd.utils.AccountTestConstants;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @ActiveProfiles("test")
@@ -33,15 +33,18 @@ class BankWindowControllerAdapterTest {
   @MockBean
   private AccountService accountService;
 
+  @MockBean
+  private ApplicationEventPublisher applicationEventPublisher;
+
   @Test
   void createAccountTest() throws Exception {
     Mockito.when(accountService.create(Mockito.anyString(), Mockito.anyString())).thenReturn(
         AccountTestConstants.ONE);
+    Mockito.doNothing().when(applicationEventPublisher).publishEvent(Mockito.any());
 
     mockMvc.perform(MockMvcRequestBuilders.get(API_URL_ACCOUNTS_ENDPOINT)
             .param("name", AccountTestConstants.USERNAME)
             .param("currency", AccountTestConstants.EUR))
-        .andDo(MockMvcResultHandlers.print())
         .andExpect(MockMvcResultMatchers.status().isOk());
 
   }
